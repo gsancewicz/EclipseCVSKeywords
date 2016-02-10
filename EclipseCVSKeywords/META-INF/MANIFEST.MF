@@ -6,6 +6,10 @@ Bundle-Version: 1.0.0.qualifier
 Bundle-Activator: pl.gsancewicz.eclipse.plugin.eck.Activator
 Require-Bundle: org.eclipse.ui,
  org.eclipse.core.runtime,
- org.eclipse.core.resources
+ org.eclipse.core.resources,
+ org.eclipse.ui.ide,
+ org.eclipse.jface.text,
+ org.eclipse.ui,
+ org.eclipse.ui.workbench.texteditor
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-ActivationPolicy: lazy
