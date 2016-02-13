@@ -78,7 +78,7 @@ public class SaveListener implements IExecutionListener {
 			    	//fallthru
 			    }
 			    final String currentText = doc.get();
-			    final TokenReplaceInputStream cvsTokenReplaceInputStream = new TokenReplaceInputStream(currentText);
+			    final TokenReplaceInputReader cvsTokenReplaceInputStream = new TokenReplaceInputReader(currentText);
 			    try(final BufferedReader reader = new BufferedReader(cvsTokenReplaceInputStream);)
 			    {
 			    	final StringBuilder out = new StringBuilder();
