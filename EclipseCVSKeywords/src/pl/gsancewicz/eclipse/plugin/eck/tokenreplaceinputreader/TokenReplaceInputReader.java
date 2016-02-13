@@ -9,6 +9,8 @@ import java.io.Reader;
 import java.io.StringReader;
 import java.util.EnumSet;
 
+import org.eclipse.core.runtime.IPath;
+
 /**
  * Input reader replacing CVS-like tokens in source string.
  * 
@@ -31,20 +33,22 @@ public class TokenReplaceInputReader extends Reader {
 	private final static char TOKEN_CHARACTER = '$';
 	private final static char TOKEN_SPLIT_CHARACTER = ':';
 	
-	enum TokenReplaceInputReaderState {
+	private enum State {
 		NORMAL_READ,
 		TOKEN_NAME_READ,
 		TOKEN_OLD_VALUE_SKIP,
 		TOKEN_VALUE_REPLACE;
 	}
-	private TokenReplaceInputReaderState state = TokenReplaceInputReaderState.NORMAL_READ;
+	private State state = State.NORMAL_READ;
 	
 	final PushbackReader pushBackReader;
 	final StringBuilder skippedValueBuilder = new StringBuilder();
 	final StringBuilder tokenNameBuilder = new StringBuilder();
 	String tokenReplacementValue = null;
+	private final IPath path;
 	
-	public TokenReplaceInputReader(final String inputString) {
+	public TokenReplaceInputReader(final String inputString, final IPath path) {
+		this.path = path;
 		this.pushBackReader = new PushbackReader(new StringReader(inputString), 256);
 	}
 
@@ -56,15 +60,15 @@ public class TokenReplaceInputReader extends Reader {
 		final char[] readArray = new char[1];
 		final int readCount = pushBackReader.read(readArray);
 		final char read = readArray[0];
-		if(EnumSet.of(TokenReplaceInputReaderState.NORMAL_READ, 
-			TokenReplaceInputReaderState.TOKEN_VALUE_REPLACE).contains(state)) {
+		if(EnumSet.of(State.NORMAL_READ, 
+			State.TOKEN_VALUE_REPLACE).contains(state)) {
 			if(read == TOKEN_CHARACTER)
 			{
-				if(state == TokenReplaceInputReaderState.NORMAL_READ) {
-					state = TokenReplaceInputReaderState.TOKEN_NAME_READ;
+				if(state == State.NORMAL_READ) {
+					state = State.TOKEN_NAME_READ;
 				}
 				else {
-					state = TokenReplaceInputReaderState.NORMAL_READ;
+					state = State.NORMAL_READ;
 				}
 			}
 			cbuf[0] = read;
@@ -78,19 +82,19 @@ public class TokenReplaceInputReader extends Reader {
 			}
 			skippedValueBuilder.append(read);
 			
-			if(state == TokenReplaceInputReaderState.TOKEN_NAME_READ) {
+			if(state == State.TOKEN_NAME_READ) {
 				if(read == TOKEN_CHARACTER) {
 					insertResolvedValue();
 				}
 				else if(read == TOKEN_SPLIT_CHARACTER) {
-					state = TokenReplaceInputReaderState.TOKEN_OLD_VALUE_SKIP;
+					state = State.TOKEN_OLD_VALUE_SKIP;
 				}
 				else {
 					tokenNameBuilder.append(read);
 				}
 				return read(cbuf, off, len);
 			}
-			else if(state == TokenReplaceInputReaderState.TOKEN_OLD_VALUE_SKIP)	{
+			else if(state == State.TOKEN_OLD_VALUE_SKIP)	{
 				if(read == TOKEN_CHARACTER) {
 					insertResolvedValue();
 				}
@@ -109,7 +113,7 @@ public class TokenReplaceInputReader extends Reader {
 		final char[] bytesToPushBack = skippedValueBuilder.toString().toCharArray();
 		skippedValueBuilder.delete(0, skippedValueBuilder.length());
 		pushBackReader.unread(bytesToPushBack);
-		state = TokenReplaceInputReaderState.NORMAL_READ;
+		state = State.NORMAL_READ;
 	}
 
 	/**
@@ -127,7 +131,7 @@ public class TokenReplaceInputReader extends Reader {
 		}
 		pushBackReader.unread(tokenReplacementValue.toCharArray());
 		tokenReplacementValue = null;
-		state = TokenReplaceInputReaderState.TOKEN_VALUE_REPLACE;
+		state = State.TOKEN_VALUE_REPLACE;
 	}
 
 	/**
@@ -148,8 +152,8 @@ public class TokenReplaceInputReader extends Reader {
 	 * @return
 	 */
 	private String getTokenValueFromStrategy(final String token) {
-		// TODO Auto-generated method stub
-		return null;
+		final TokenReplaceStrategy strategy = TokenReplaceUtil.getStrategy(token);
+		return strategy.getTokenReplacement(path);
 	}
 
 	/* (non-Javadoc)

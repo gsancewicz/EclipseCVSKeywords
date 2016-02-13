@@ -9,11 +9,13 @@ import org.eclipse.core.commands.ExecutionEvent;
 import org.eclipse.core.commands.ExecutionException;
 import org.eclipse.core.commands.IExecutionListener;
 import org.eclipse.core.commands.NotHandledException;
+import org.eclipse.core.runtime.IPath;
 import org.eclipse.jface.text.BlockTextSelection;
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.ITextSelection;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.handlers.HandlerUtil;
+import org.eclipse.ui.part.FileEditorInput;
 import org.eclipse.ui.texteditor.ITextEditor;
 
 import pl.gsancewicz.eclipse.plugin.eck.tokenreplaceinputreader.TokenReplaceInputReader;
@@ -39,33 +41,43 @@ public class SaveListener implements IExecutionListener {
 		final IEditorPart editor;
 		try	{
 			editor = HandlerUtil.getActiveEditorChecked(event);
+			if(!(editor instanceof ITextEditor))
+			{
+				return;
+			}
 		}
 		catch (final ExecutionException e) {
 			return;
 		}
 		
-	    final ITextEditor ite = (ITextEditor)editor;
+	    final ITextEditor textEditor = (ITextEditor)editor;
 	    
-	    final IDocument doc = ite.getDocumentProvider().getDocument(ite.getEditorInput());
+	    final FileEditorInput editorInput = (FileEditorInput)textEditor.getEditorInput();
+	    final IPath path = editorInput.getPath();
+//	    editorInput.getFile().setContents(arg0, arg1, arg2, arg3);
 	    
-	    final ITextSelection selection = (ITextSelection)ite.getSelectionProvider().getSelection();
+	    
+	    final IDocument doc = textEditor.getDocumentProvider().getDocument(textEditor.getEditorInput());
+	    
+	    final ITextSelection selection = (ITextSelection)textEditor.getSelectionProvider().getSelection();
 	    final int columnNumber = getCurrentColumnNumber(selection, doc);
 	    final int lineNumber = selection.getStartLine();
 	    
 	    final String documentContent = doc.get();
-	    final String replacedString = replaceTokens(documentContent);
+	    final String replacedString = replaceTokens(documentContent, path);
 	    doc.set(replacedString);
 	    final BlockTextSelection blockTextSelection = new BlockTextSelection(doc, lineNumber, columnNumber, lineNumber, columnNumber, 4);
-	    ite.getSelectionProvider().setSelection(blockTextSelection);
+	    textEditor.getSelectionProvider().setSelection(blockTextSelection);
 	}
 
 	/**
 	 * @param currentText
+	 * @param path 
 	 * @return
 	 */
-	private String replaceTokens(final String currentText) {
+	private String replaceTokens(final String currentText, final IPath path) {
 		String replacedString = currentText;
-	    final TokenReplaceInputReader cvsTokenReplaceInputStream = new TokenReplaceInputReader(currentText);
+	    final TokenReplaceInputReader cvsTokenReplaceInputStream = new TokenReplaceInputReader(currentText, path);
 	    try(final BufferedReader reader = new BufferedReader(cvsTokenReplaceInputStream);)
 	    {
 	    	final StringBuilder out = new StringBuilder();
@@ -124,6 +136,7 @@ public class SaveListener implements IExecutionListener {
 	@Override
 	public void postExecuteSuccess(final String arg0, final Object arg1) {
 		//no implementation needed
+		System.out.println();
 	}
 
 }
