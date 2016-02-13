@@ -1,5 +1,5 @@
 # EclipseCVSKeywords
-Eclipse plugin that expands keywords like CVS.
+Eclipse plugin that expands keywords on save like CVS does.
 
 Currently implemented tokens:
 $Id$ expands to $Id: {filename}, {date} {time} {user.name}$
