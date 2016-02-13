@@ -48,22 +48,6 @@ public class TokenReplaceInputReader extends Reader {
 		this.pushBackReader = new PushbackReader(new StringReader(inputString), 256);
 	}
 
-	/**
-	 * @param string
-	 * @return
-	 */
-	private String getTokenReplacementValue(final String string) {
-		return string+TOKEN_SPLIT_CHARACTER+" " +"wartość testowa"+TOKEN_CHARACTER;
-	}
-
-	/* (non-Javadoc)
-	 * @see java.io.Reader#close()
-	 */
-	@Override
-	public void close() throws IOException {
-		this.pushBackReader.close();
-	}
-
 	/* (non-Javadoc)
 	 * @see java.io.Reader#read(char[], int, int)
 	 */
@@ -136,9 +120,44 @@ public class TokenReplaceInputReader extends Reader {
 	private void insertResolvedValue() throws IOException {
 		tokenReplacementValue = getTokenReplacementValue(tokenNameBuilder.toString());
 		tokenNameBuilder.delete(0, tokenNameBuilder.length());
+		if(tokenReplacementValue == null)
+		{
+			pushBackSkippedValue();
+			return;
+		}
 		pushBackReader.unread(tokenReplacementValue.toCharArray());
 		tokenReplacementValue = null;
 		state = TokenReplaceInputReaderState.TOKEN_VALUE_REPLACE;
+	}
+
+	/**
+	 * @param token
+	 * @return
+	 */
+	private String getTokenReplacementValue(final String token) {
+		final String tokenValueFromStrategy = getTokenValueFromStratego(token);
+		if(tokenValueFromStrategy == null)
+		{
+			return null;
+		}
+		return token + TOKEN_SPLIT_CHARACTER + " " + tokenValueFromStrategy + TOKEN_CHARACTER;
+	}
+
+	/**
+	 * @param token
+	 * @return
+	 */
+	private String getTokenValueFromStratego(final String token) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	/* (non-Javadoc)
+	 * @see java.io.Reader#close()
+	 */
+	@Override
+	public void close() throws IOException {
+		this.pushBackReader.close();
 	}
 
 
