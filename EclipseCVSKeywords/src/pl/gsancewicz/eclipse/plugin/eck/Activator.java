@@ -37,9 +37,8 @@ public class Activator extends AbstractUIPlugin {
 	public void start(final BundleContext context) throws Exception {
 		super.start(context);
 		plugin = this;
-		final ICommandService commandService = (ICommandService) PlatformUI.getWorkbench().getService(ICommandService.class);
+		final ICommandService commandService = PlatformUI.getWorkbench().getService(ICommandService.class);
         commandService.addExecutionListener(new SaveListener());
-//		ResourcesPlugin.getWorkspace().addResourceChangeListener(new ECKResourceListener(), IResourceChangeEvent.POST_CHANGE);
 	}
 
 	/*
