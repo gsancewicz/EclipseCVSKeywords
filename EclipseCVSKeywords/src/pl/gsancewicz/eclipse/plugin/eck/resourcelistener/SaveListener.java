@@ -4,7 +4,6 @@
 package pl.gsancewicz.eclipse.plugin.eck.resourcelistener;
 
 import java.io.BufferedReader;
-import java.io.InputStreamReader;
 
 import org.eclipse.core.commands.ExecutionEvent;
 import org.eclipse.core.commands.ExecutionException;
@@ -79,8 +78,8 @@ public class SaveListener implements IExecutionListener {
 			    	//fallthru
 			    }
 			    final String currentText = doc.get();
-			    final CVSTokenReplaceInputStream cvsTokenReplaceInputStream = new CVSTokenReplaceInputStream(currentText);
-			    try(final BufferedReader reader = new BufferedReader(new InputStreamReader(cvsTokenReplaceInputStream));)
+			    final TokenReplaceInputStream cvsTokenReplaceInputStream = new TokenReplaceInputStream(currentText);
+			    try(final BufferedReader reader = new BufferedReader(cvsTokenReplaceInputStream);)
 			    {
 			    	final StringBuilder out = new StringBuilder();
 				    final String newLine = System.getProperty("line.separator");

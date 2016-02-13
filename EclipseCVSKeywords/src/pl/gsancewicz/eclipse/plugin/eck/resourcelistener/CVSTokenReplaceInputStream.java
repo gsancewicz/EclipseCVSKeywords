@@ -132,7 +132,7 @@ public class CVSTokenReplaceInputStream extends InputStream {
 			//$Id: keyword.html,v 1.3 1999/12/23 21:59:22 markd Exp $
 			return "$Id "+ sdf.format(date) + " " + System.getProperty("user.name") + " Exp $";
 		}
-		return "$zmiana Grzegorz Sancewicz aa sda asd $";
+		return null;
 	}
 
 	/**
