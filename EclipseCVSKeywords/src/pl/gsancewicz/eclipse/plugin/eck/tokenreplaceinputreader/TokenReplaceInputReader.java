@@ -1,7 +1,7 @@
 /**
  * 
  */
-package pl.gsancewicz.eclipse.plugin.eck.resourcelistener;
+package pl.gsancewicz.eclipse.plugin.eck.tokenreplaceinputreader;
 
 import java.io.IOException;
 import java.io.PushbackReader;
@@ -135,7 +135,7 @@ public class TokenReplaceInputReader extends Reader {
 	 * @return
 	 */
 	private String getTokenReplacementValue(final String token) {
-		final String tokenValueFromStrategy = getTokenValueFromStratego(token);
+		final String tokenValueFromStrategy = getTokenValueFromStrategy(token);
 		if(tokenValueFromStrategy == null)
 		{
 			return null;
@@ -147,7 +147,7 @@ public class TokenReplaceInputReader extends Reader {
 	 * @param token
 	 * @return
 	 */
-	private String getTokenValueFromStratego(final String token) {
+	private String getTokenValueFromStrategy(final String token) {
 		// TODO Auto-generated method stub
 		return null;
 	}

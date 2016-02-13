@@ -16,6 +16,8 @@ import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.handlers.HandlerUtil;
 import org.eclipse.ui.texteditor.ITextEditor;
 
+import pl.gsancewicz.eclipse.plugin.eck.tokenreplaceinputreader.TokenReplaceInputReader;
+
 /**
  * Execution listener that hooks into file save command (
  * 
