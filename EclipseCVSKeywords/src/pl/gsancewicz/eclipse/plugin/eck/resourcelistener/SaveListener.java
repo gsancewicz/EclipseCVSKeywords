@@ -11,6 +11,7 @@ import org.eclipse.jface.text.IDocumentListener;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.actions.ActionFactory;
 import org.eclipse.ui.handlers.HandlerUtil;
+import org.eclipse.ui.part.MultiPageEditorPart;
 import org.eclipse.ui.texteditor.ITextEditor;
 
 /**
@@ -76,6 +77,16 @@ public class SaveListener extends AbstractSaveListener {
 			if(editor instanceof ITextEditor)
 			{
 				return (ITextEditor)editor;
+			}
+			else if (editor instanceof MultiPageEditorPart)
+			{
+				//TODO - what if change is made on the other page?
+				final MultiPageEditorPart xmlEditor = (MultiPageEditorPart)editor;
+				final Object selectedPage = xmlEditor.getSelectedPage();
+				if(selectedPage instanceof ITextEditor)
+				{
+					return (ITextEditor)selectedPage;
+				}
 			}
 			return null;
 		}
